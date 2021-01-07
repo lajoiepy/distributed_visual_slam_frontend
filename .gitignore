@@ -1,0 +1,7 @@
+*.DS_Store
+*vscode
+*.png
+*__pycache__
+*experiments*
+*.whl
+logs/*
