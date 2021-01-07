@@ -1,3 +1,0 @@
-int16[] pose_ids
----
-geometry_msgs/PoseWithCovariance[] pose_estimates
