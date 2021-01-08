@@ -50,17 +50,20 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>kimera_vio</depend>
-  <depend>kimera_vio_ros</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>rtabmap_ros</depend>
   <depend>tf</depend>
   <depend>tf_conversions</depend>
   <depend>tf2_ros</depend>
+  <depend>eigen_conversions</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
   <depend>sensor_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>opencv</depend>
+  <depend>roslaunch</depend>
 
   <build_depend>message_generation</build_depend>
   <build_export_depend>message_runtime</build_export_depend>
