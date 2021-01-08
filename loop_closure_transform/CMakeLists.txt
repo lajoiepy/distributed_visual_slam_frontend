@@ -6,7 +6,8 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  kimera_vio_ros  )
+  kimera_vio_ros
+  message_generation  )
 
 ### Find GTSAM ###
 find_package(GTSAM REQUIRED)
@@ -22,6 +23,21 @@ catkin_package(
 include_directories(
  include
  ${catkin_INCLUDE_DIRS}
+)
+
+## Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  StereoMatch.msg
+)
+
+## Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  rtabmap_ros
+  sensor_msgs
 )
 
 add_executable(${PROJECT_NAME}_node src/loop_closure_transform_node.cpp)
