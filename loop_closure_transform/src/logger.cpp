@@ -69,10 +69,10 @@ void log_find_matches_answer(loop_closure_transform::FindMatches::Response &res)
     fclose(pFile);
 }
 
-void log_receive_separators_query(loop_closure_transform::ReceiveSeparators::Request &req)
+void log_receive_loopclosures_query(loop_closure_transform::ReceiveLoopClosures::Request &req)
 {
     ros::Time t = ros::Time::now();
-    FILE *pFile = fopen("/root/rdpgo_ws/src/robust_distributed_slam_module/scripts/log/receive_separators_query.txt", "a");
+    FILE *pFile = fopen("/root/rdpgo_ws/src/robust_distributed_slam_module/scripts/log/receive_loopclosures_query.txt", "a");
     fprintf(pFile, "%u.%u\n", t.sec, t.nsec);
 
     fprintf(pFile, "robot_from_id 1");
@@ -105,8 +105,8 @@ void log_receive_separators_query(loop_closure_transform::ReceiveSeparators::Req
     fprintf(pFile, "%lu ", boost::size(req.transform_est_success));
     fprintf(pFile, "\n");
 
-    fprintf(pFile, "number_of_separators ");
-    fprintf(pFile, "%lu ", boost::size(req.separators));
+    fprintf(pFile, "number_of_loopclosures ");
+    fprintf(pFile, "%lu ", boost::size(req.loopclosures));
     fprintf(pFile, "\n");
 
     fprintf(pFile, "\n");
@@ -114,10 +114,10 @@ void log_receive_separators_query(loop_closure_transform::ReceiveSeparators::Req
     fclose(pFile);
 }
 
-void log_receive_separators_answer(loop_closure_transform::ReceiveSeparators::Response &res)
+void log_receive_loopclosures_answer(loop_closure_transform::ReceiveLoopClosures::Response &res)
 {
     ros::Time t = ros::Time::now();
-    FILE *pFile = fopen("/root/rdpgo_ws/src/robust_distributed_slam_module/scripts/log/receive_separators_answer.txt", "a");
+    FILE *pFile = fopen("/root/rdpgo_ws/src/robust_distributed_slam_module/scripts/log/receive_loopclosures_answer.txt", "a");
     fprintf(pFile, "%u.%u\n", t.sec, t.nsec);
     fprintf(pFile, "success 1 ");
     fprintf(pFile, "\n");

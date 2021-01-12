@@ -27,6 +27,6 @@ public:
                              loop_closure_transform::GetFeatsAndDesc::Response &res);
     bool estimateTransformation(loop_closure_transform::EstTransform::Request &req,
                                 loop_closure_transform::EstTransform::Response &res);
-    StereoCamGeometricTools(const sensor_msgs::CameraInfo &camera_info_l, const sensor_msgs::CameraInfo &camera_info_r, const std::string &frame_id, const bool &estimate_stereo_transform_from_tf, const int &nb_min_inliers_separators);
+    StereoCamGeometricTools(const sensor_msgs::CameraInfo &camera_info_l, const sensor_msgs::CameraInfo &camera_info_r, const std::string &frame_id, const bool &estimate_stereo_transform_from_tf, const int &nb_min_inliers_loopclosures);
     // void ~StereoCamGeometricTools();
 };

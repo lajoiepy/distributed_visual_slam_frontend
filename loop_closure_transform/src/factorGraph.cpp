@@ -70,14 +70,14 @@ FactorGraphData::FactorGraphData(ros::NodeHandle n)
     poses_initial_guess_.insert(init_symbol.key(), cur_pose_);
 
     // Delete existent log files
-    std::string log_file_name = "/root/multi_robot_SLAM_separators/logs/graph_with_separators_robot_" + boost::lexical_cast<std::string>(local_robot_id_) + ".g2o";
+    std::string log_file_name = "/root/multi_robot_SLAM_loopclosures/logs/graph_with_loopclosures_robot_" + boost::lexical_cast<std::string>(local_robot_id_) + ".g2o";
     std::remove(log_file_name.c_str());
 }
 
 FactorGraphData::~FactorGraphData()
 {
     ROS_INFO("Writing log");
-    std::string dataset_file_name = "/root/multi_robot_SLAM_separators/logs/graph_with_separators_robot_" + boost::lexical_cast<std::string>(local_robot_id_) + ".g2o";
+    std::string dataset_file_name = "/root/multi_robot_SLAM_loopclosures/logs/graph_with_loopclosures_robot_" + boost::lexical_cast<std::string>(local_robot_id_) + ".g2o";
     gtsam::writeG2o(pose_graph_, poses_initial_guess_, dataset_file_name);
 }
 
@@ -87,11 +87,11 @@ void resetPoseWithCovariance(PoseWithCovariance &toReset)
     toReset.covariance_matrix = gtsam::zeros(6, 6);
 }
 
-bool FactorGraphData::addSeparators(loop_closure_transform::ReceiveSeparators::Request &req,
-                                    loop_closure_transform::ReceiveSeparators::Response &res)
+bool FactorGraphData::addloopclosures(loop_closure_transform::ReceiveLoopClosures::Request &req,
+                                    loop_closure_transform::ReceiveLoopClosures::Response &res)
 {
     gtsam::Matrix covariance_mat = gtsam::zeros(6, 6);
-    gtsam::Pose3 separator;
+    gtsam::Pose3 loopclosure;
     gtsam::Symbol robot_symbol_from;
     gtsam::Symbol robot_symbol_to;
 
@@ -102,9 +102,9 @@ bool FactorGraphData::addSeparators(loop_closure_transform::ReceiveSeparators::R
         robot_symbol_from = gtsam::Symbol(robot_from_id_char_, req.kf_ids_from[idx]);
         robot_symbol_to = gtsam::Symbol(robot_to_id_char_, req.kf_ids_to[idx]);
 
-        covarianceToMatrix(req.separators[idx].covariance, covariance_mat);
+        covarianceToMatrix(req.loopclosures[idx].covariance, covariance_mat);
 
-        poseROSToPose3(req.separators[idx].pose, separator);
+        poseROSToPose3(req.loopclosures[idx].pose, loopclosure);
 
         // If covariance is manually set, replace the one in accumulated_transform_
         if (set_fixed_covariance_)
@@ -114,7 +114,7 @@ bool FactorGraphData::addSeparators(loop_closure_transform::ReceiveSeparators::R
 
         gtsam::SharedNoiseModel noise_model = gtsam::noiseModel::Gaussian::Covariance(covariance_mat);
 
-        gtsam::BetweenFactor<gtsam::Pose3> new_factor = gtsam::BetweenFactor<gtsam::Pose3>(robot_symbol_from, robot_symbol_to, separator, noise_model);
+        gtsam::BetweenFactor<gtsam::Pose3> new_factor = gtsam::BetweenFactor<gtsam::Pose3>(robot_symbol_from, robot_symbol_to, loopclosure, noise_model);
         pose_graph_.push_back(new_factor);
     }
     res.success = true;
@@ -200,7 +200,7 @@ void FactorGraphData::manuallySetCovMat(gtsam::Matrix &cov_mat_to_replace)
     FactorGraphData factorGraphData = FactorGraphData(n);
 
     ros::Subscriber sub_odom = n.subscribe("odom_info", 1000, &FactorGraphData::addOdometry, &factorGraphData);
-    ros::ServiceServer s_add_separators = n.advertiseService("add_separators_pose_graph", &FactorGraphData::addSeparators, &factorGraphData);
+    ros::ServiceServer s_add_loopclosures = n.advertiseService("add_loopclosures_pose_graph", &FactorGraphData::addloopclosures, &factorGraphData);
     ros::spin();
 
     return 0;

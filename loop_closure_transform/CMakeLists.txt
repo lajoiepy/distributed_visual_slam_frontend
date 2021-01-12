@@ -57,7 +57,7 @@ add_service_files(
   EstTransform.srv
   GetFeatsAndDesc.srv
   FindMatches.srv
-  ReceiveSeparators.srv
+  ReceiveLoopClosures.srv
   PoseEstimates.srv
 )
 
@@ -75,7 +75,6 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES loop_closure_transform
   CATKIN_DEPENDS roscpp rospy geometry_msgs std_msgs message_runtime rtabmap_ros tf tf_conversions tf2_ros eigen_conversions cv_bridge image_transport sensor_msgs std_srvs
-  DEPENDS system_lib
 )
 
 include_directories(

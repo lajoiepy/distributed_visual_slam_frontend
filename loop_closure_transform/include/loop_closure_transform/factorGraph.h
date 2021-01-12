@@ -11,7 +11,7 @@
 #include <gtsam/slam/dataset.h>
 
 #include "loop_closure_transform/MsgConversion.h"
-#include "loop_closure_transform/ReceiveSeparators.h"
+#include "loop_closure_transform/ReceiveLoopClosures.h"
 typedef struct PoseWithCovariance PoseWithCovariance;
 
 struct PoseWithCovariance
@@ -43,8 +43,8 @@ private:
 public:
     void
     addOdometry(const rtabmap_ros::OdomInfo::ConstPtr &msg);
-    bool addSeparators(loop_closure_transform::ReceiveSeparators::Request &req,
-                       loop_closure_transform::ReceiveSeparators::Response &res);
+    bool addloopclosures(loop_closure_transform::ReceiveLoopClosures::Request &req,
+                       loop_closure_transform::ReceiveLoopClosures::Response &res);
     void manuallySetCovMat(gtsam::Matrix &cov_mat_to_replace);
     FactorGraphData(ros::NodeHandle n);
     ~FactorGraphData();

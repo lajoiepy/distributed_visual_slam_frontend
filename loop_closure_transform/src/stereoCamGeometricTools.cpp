@@ -2,7 +2,7 @@
 
 using namespace rtabmap;
 
-StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &camera_info_l, const sensor_msgs::CameraInfo &camera_info_r, const std::string &frame_id, const bool &estimate_stereo_transform_from_tf, const int &nb_min_inliers_separators)
+StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &camera_info_l, const sensor_msgs::CameraInfo &camera_info_r, const std::string &frame_id, const bool &estimate_stereo_transform_from_tf, const int &nb_min_inliers_loopclosures)
 {
     ULogger::setType(ULogger::kTypeConsole);
     ULogger::setLevel(ULogger::kInfo);
@@ -84,7 +84,7 @@ StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &
    // params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kIcpVoxelSize(), "0"));
     //params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kIcpEpsilon(), "0.01"));
     
-    params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kVisMinInliers(), std::to_string(nb_min_inliers_separators)));
+    params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kVisMinInliers(), std::to_string(nb_min_inliers_loopclosures)));
 
     //params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kVisEstimationType(), "1"));
     //params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kVisPnPFlags(), "0"));
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
     bool estimate_stereo_transform_from_tf;
     std::string frame_id;
-    int nb_min_inliers_separators;
+    int nb_min_inliers_loopclosures;
     if (!n.getParam("estimate_stereo_transform_from_tf", estimate_stereo_transform_from_tf))
     {
         ROS_ERROR("Couldn't find estimate_stereo_transform_from_tf param");
@@ -195,9 +195,9 @@ int main(int argc, char **argv)
         ROS_ERROR("Couldn't find frame ID");
     }
 
-    if (!n.getParam("separators_min_inliers", nb_min_inliers_separators))
+    if (!n.getParam("loopclosures_min_inliers", nb_min_inliers_loopclosures))
     {
-        ROS_ERROR("Couldn't find separators_min_inliers param");
+        ROS_ERROR("Couldn't find loopclosures_min_inliers param");
     }
 
     sensor_msgs::CameraInfoConstPtr camera_info_l_cst_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("left/camera_info", n);
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     sensor_msgs::CameraInfo camera_info_l = *camera_info_l_cst_ptr;
     sensor_msgs::CameraInfo camera_info_r = *camera_info_r_cst_ptr;
 
-    StereoCamGeometricTools stereoCamGeometricToolsNode = StereoCamGeometricTools(camera_info_l, camera_info_r, frame_id, estimate_stereo_transform_from_tf, nb_min_inliers_separators);
+    StereoCamGeometricTools stereoCamGeometricToolsNode = StereoCamGeometricTools(camera_info_l, camera_info_r, frame_id, estimate_stereo_transform_from_tf, nb_min_inliers_loopclosures);
     ros::ServiceServer service_feats = n.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
     ros::ServiceServer service_transf = n.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
     ROS_INFO("Stereo camera geometric tools ready");

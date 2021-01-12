@@ -7,6 +7,6 @@ int16[] frames_kepts_ids_to
 geometry_msgs/PoseWithCovariance[] pose_estimates_from
 geometry_msgs/PoseWithCovariance[] pose_estimates_to
 bool[] transform_est_success
-geometry_msgs/PoseWithCovariance[] separators
+geometry_msgs/PoseWithCovariance[] loopclosures
 ---
 bool success

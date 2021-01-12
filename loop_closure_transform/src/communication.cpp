@@ -12,32 +12,32 @@ Communicater::Communicater()
     }
 }
 
-bool Communicater::found_separators_query(loop_closure_transform::ReceiveSeparators::Request &req,
-                                         loop_closure_transform::ReceiveSeparators::Response &res)
+bool Communicater::found_loopclosures_query(loop_closure_transform::ReceiveLoopClosures::Request &req,
+                                         loop_closure_transform::ReceiveLoopClosures::Response &res)
 {
-    std::string service_name = "/robot_"+std::to_string(other_robot_id_)+"/found_separators_receive";
-    ros::ServiceClient client = n_.serviceClient<loop_closure_transform::ReceiveSeparators>(service_name);
-    loop_closure_transform::ReceiveSeparators srv;
+    std::string service_name = "/robot_"+std::to_string(other_robot_id_)+"/found_loopclosures_receive";
+    ros::ServiceClient client = n_.serviceClient<loop_closure_transform::ReceiveLoopClosures>(service_name);
+    loop_closure_transform::ReceiveLoopClosures srv;
     srv.request = req;
-    log_receive_separators_query(req);
+    log_receive_loopclosures_query(req);
     if (client.call(srv))
     {
-        log_receive_separators_answer(res);
+        log_receive_loopclosures_answer(res);
         res = srv.response;
     }
     else
     {
-        ROS_ERROR("Failed to call found_separators_receive service");
+        ROS_ERROR("Failed to call found_loopclosures_receive service");
         return 1;
     }
     return true;
 }
 
-bool Communicater::found_separators_receive(loop_closure_transform::ReceiveSeparators::Request &req,
-                                            loop_closure_transform::ReceiveSeparators::Response &res)
+bool Communicater::found_loopclosures_receive(loop_closure_transform::ReceiveLoopClosures::Request &req,
+                                            loop_closure_transform::ReceiveLoopClosures::Response &res)
 {
-    ros::ServiceClient client = n_.serviceClient<loop_closure_transform::ReceiveSeparators>("receive_separators_py");
-    loop_closure_transform::ReceiveSeparators srv;
+    ros::ServiceClient client = n_.serviceClient<loop_closure_transform::ReceiveLoopClosures>("receive_loopclosures_py");
+    loop_closure_transform::ReceiveLoopClosures srv;
     srv.request = req;
     if (client.call(srv))
     {
@@ -45,7 +45,7 @@ bool Communicater::found_separators_receive(loop_closure_transform::ReceiveSepar
     }
     else
     {
-        ROS_ERROR("Failed to call receive_separators_py service");
+        ROS_ERROR("Failed to call receive_loopclosures_py service");
         return 1;
     }
     return true;
@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 
     ros::ServiceServer service_matches_query = communicater.n_.advertiseService("find_matches_query", &Communicater::find_matches_query, &communicater);
     ros::ServiceServer service_matches_answer = communicater.n_.advertiseService("find_matches_answer", &Communicater::find_matches_answer, &communicater);
-    ros::ServiceServer service_sep_query = communicater.n_.advertiseService("found_separators_query", &Communicater::found_separators_query, &communicater);
-    ros::ServiceServer service_sep_rec = communicater.n_.advertiseService("found_separators_receive", &Communicater::found_separators_receive, &communicater);
+    ros::ServiceServer service_sep_query = communicater.n_.advertiseService("found_loopclosures_query", &Communicater::found_loopclosures_query, &communicater);
+    ros::ServiceServer service_sep_rec = communicater.n_.advertiseService("found_loopclosures_receive", &Communicater::found_loopclosures_receive, &communicater);
 
     ros::AsyncSpinner spinner(2); // Use 4 threads
     spinner.start();
