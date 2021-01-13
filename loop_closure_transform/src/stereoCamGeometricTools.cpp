@@ -179,7 +179,7 @@ bool StereoCamGeometricTools::estimateTransformation(loop_closure_transform::Est
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "stereo_cam_geometric_tools_node");
+    /*ros::init(argc, argv, "stereo_cam_geometric_tools_node");
     ros::NodeHandle n;
 
     bool estimate_stereo_transform_from_tf;
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
     ros::ServiceServer service_feats = n.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
     ros::ServiceServer service_transf = n.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
     ROS_INFO("Stereo camera geometric tools ready");
-    ros::spin();
+    ros::spin();*/
 
     return 0;
 }

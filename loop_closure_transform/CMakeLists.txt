@@ -94,21 +94,22 @@ add_library(loop_closure_transform
 target_link_libraries(loop_closure_transform ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam)
 add_dependencies(loop_closure_transform loop_closure_transform_gencpp)
 
-add_executable(stereo_cam_geometric_tools src/stereoCamGeometricTools.cpp src/myRegistration.cpp src/myRegistrationVis.cpp src/MsgConversion.cpp)
-target_link_libraries(stereo_cam_geometric_tools ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam loop_closure_transform)
-add_dependencies(stereo_cam_geometric_tools ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
+# add_executable(stereo_cam_geometric_tools src/stereoCamGeometricTools.cpp src/myRegistration.cpp src/myRegistrationVis.cpp src/MsgConversion.cpp)
+# target_link_libraries(stereo_cam_geometric_tools ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam loop_closure_transform)
+# add_dependencies(stereo_cam_geometric_tools ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
 
-add_executable(factor_graph src/factorGraph.cpp)
-target_link_libraries(factor_graph ${catkin_LIBRARIES} gtsam loop_closure_transform)
-add_dependencies(factor_graph ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
+# add_executable(factor_graph src/factorGraph.cpp)
+# target_link_libraries(factor_graph ${catkin_LIBRARIES} gtsam loop_closure_transform)
+# add_dependencies(factor_graph ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
 
-add_executable(communication src/communication.cpp src/logger.cpp)
-target_link_libraries(communication ${catkin_LIBRARIES} loop_closure_transform)
-add_dependencies(communication ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
+# add_executable(communication src/communication.cpp src/logger.cpp)
+# target_link_libraries(communication ${catkin_LIBRARIES} loop_closure_transform)
+# add_dependencies(communication ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
 
 add_executable(${PROJECT_NAME}_node src/loop_closure_transform_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node 
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
+  loop_closure_transform
   gtsam 
   )
