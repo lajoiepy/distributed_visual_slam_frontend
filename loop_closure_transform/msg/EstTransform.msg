@@ -4,6 +4,3 @@ KeyPoint3DVec kptsFrom3D
 KeyPoint3DVec kptsTo3D
 KeyPointVec kptsFrom
 KeyPointVec kptsTo
----
-geometry_msgs/PoseWithCovariance poseWithCov
-bool success

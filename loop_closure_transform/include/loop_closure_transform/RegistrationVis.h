@@ -30,16 +30,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rtabmap/core/RtabmapExp.h" // DLL export/import defines
 
-#include <rtabmap/core/Registration.h>
+#include "loop_closure_transform/Registration.h" 
 #include <rtabmap/core/Signature.h>
 
 namespace rtabmap {
 
 class Feature2D;
-
-#ifdef RTABMAP_PYMATCHER
-class PyMatcher;
-#endif
 
 // Visual registration
 class RTABMAP_EXP RegistrationVis : public Registration
@@ -54,19 +50,33 @@ public:
 	float getInlierDistance() const {return _inlierDistance;}
 	int getIterations() const {return _iterations;}
 	int getMinInliers() const {return _minInliers;}
-	int getNNType() const {return _nnType;}
-	float getNNDR() const {return _nndr;}
-	int getEstimationType() const {return _estimationType;}
 
-	const Feature2D * getDetector() const {return _detectorFrom;}
+	Feature2D * createFeatureDetector() const; // for convenience
 
 protected:
+	virtual Transform computeTransformationFromFeatsImpl(
+	StereoCameraModel stereoCameraModelTo,
+	StereoCameraModel stereoCameraModelFrom,
+	cv::Mat descriptorsFrom,
+	cv::Mat descriptorsTo,
+	cv::Size imageSize,
+	std::vector<cv::Point3f> kptsFrom3D,
+	std::vector<cv::Point3f> kptsTo3D,
+	std::vector<cv::KeyPoint> kptsFrom,
+	std::vector<cv::KeyPoint> kptsTo,
+	Transform guess, // (flowMaxLevel is set to 0 when guess is used)
+	RegistrationInfo &info) const;
 	virtual Transform computeTransformationImpl(
 			Signature & from,
 			Signature & to,
 			Transform guess,
 			RegistrationInfo & info) const;
-
+	virtual void getFeaturesImpl(
+		std::vector<cv::Point3f> & kptsFrom3DOut,
+		std::vector<cv::KeyPoint> & kptsFromOut,
+		cv::Mat & descriptorsFromOut,
+		Signature & fromSignature,
+		RegistrationInfo & info) const;
 	virtual bool isImageRequiredImpl() const {return true;}
 	virtual bool canUseGuessImpl() const {return _correspondencesApproach != 0 || _guessWinSize>0;}
 	virtual int getMinVisualCorrespondencesImpl() const {return _minInliers;}
@@ -88,26 +98,13 @@ private:
 	float _flowEps;
 	int _flowMaxLevel;
 	float _nndr;
-	int _nnType;
-	bool _gmsWithRotation;
-	bool _gmsWithScale;
-	double _gmsThresholdFactor;
 	int _guessWinSize;
 	bool _guessMatchToProjection;
 	int _bundleAdjustment;
 	bool _depthAsMask;
-	float _minInliersDistributionThr;
-	float _maxInliersMeanDistance;
 
 	ParametersMap _featureParameters;
 	ParametersMap _bundleParameters;
-
-	Feature2D * _detectorFrom;
-	Feature2D * _detectorTo;
-
-#ifdef RTABMAP_PYMATCHER
-	PyMatcher * _pyMatcher;
-#endif
 };
 
 }

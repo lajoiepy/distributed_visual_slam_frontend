@@ -49,13 +49,14 @@ add_message_files(
   KeyPoint3DVec.msg
   Descriptors.msg
   StereoMatch.msg
+  EstTransform.msg
+  StereoExtractResult.msg
+  StereoImagePair.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  EstTransform.srv
-  GetFeatsAndDesc.srv
   FindMatches.srv
   ReceiveLoopClosures.srv
   PoseEstimates.srv
@@ -89,24 +90,19 @@ include_directories(
 link_directories(${GTSAM_LIBRARY_DIRS})
 
 add_library(loop_closure_transform 
-  src/myRegistration.cpp src/myRegistrationVis.cpp src/MsgConversion.cpp src/logger.cpp
+  src/Registration.cpp src/RegistrationVis.cpp src/MsgConversion.cpp src/logger.cpp
 )
 target_link_libraries(loop_closure_transform ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam)
 add_dependencies(loop_closure_transform loop_closure_transform_gencpp)
 
-# add_executable(stereo_cam_geometric_tools src/stereoCamGeometricTools.cpp src/myRegistration.cpp src/myRegistrationVis.cpp src/MsgConversion.cpp)
+# add_executable(stereo_cam_geometric_tools src/stereoCamGeometricTools.cpp src/Registration.cpp src/RegistrationVis.cpp src/MsgConversion.cpp)
 # target_link_libraries(stereo_cam_geometric_tools ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam loop_closure_transform)
 # add_dependencies(stereo_cam_geometric_tools ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
 
-# add_executable(factor_graph src/factorGraph.cpp)
-# target_link_libraries(factor_graph ${catkin_LIBRARIES} gtsam loop_closure_transform)
-# add_dependencies(factor_graph ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
-
-# add_executable(communication src/communication.cpp src/logger.cpp)
-# target_link_libraries(communication ${catkin_LIBRARIES} loop_closure_transform)
-# add_dependencies(communication ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
-
-add_executable(${PROJECT_NAME}_node src/loop_closure_transform_node.cpp)
+add_executable(${PROJECT_NAME}_node 
+  src/loop_closure_transform_node.cpp
+  src/stereoCamGeometricTools.cpp
+  )
 target_link_libraries(${PROJECT_NAME}_node 
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}

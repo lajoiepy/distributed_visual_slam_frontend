@@ -97,12 +97,11 @@ StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &
     registrationPipeline_ = Registration::create(params);
 }
 
-bool StereoCamGeometricTools::getFeaturesAndDescriptor(loop_closure_transform::GetFeatsAndDesc::Request &req,
-                                                       loop_closure_transform::GetFeatsAndDesc::Response &res)
+void StereoCamGeometricTools::getFeaturesAndDescriptor(const loop_closure_transform::StereoImagePair::ConstPtr &msg)
 {
 
-    cv::Mat img_l = cv_bridge::toCvCopy(req.image_left, sensor_msgs::image_encodings::MONO8)->image;
-    cv::Mat img_r = cv_bridge::toCvCopy(req.image_right, sensor_msgs::image_encodings::MONO8)->image;
+    cv::Mat img_l = cv_bridge::toCvCopy(msg->image_left, sensor_msgs::image_encodings::MONO8)->image;
+    cv::Mat img_r = cv_bridge::toCvCopy(msg->image_right, sensor_msgs::image_encodings::MONO8)->image;
 
     SensorData frame(img_l, img_r, cam_);
 
@@ -111,16 +110,14 @@ bool StereoCamGeometricTools::getFeaturesAndDescriptor(loop_closure_transform::G
     cv::Mat descriptorsFrom;
     RegistrationInfo info1;
     Signature frameSig(frame);
-    //registrationPipeline_->getFeatures(kptsFrom3D, kptsFrom, descriptorsFrom, frameSig, &info1); TODO: FIX
+    registrationPipeline_->getFeatures(kptsFrom3D, kptsFrom, descriptorsFrom, frameSig, &info1);
 
-    descriptorsToROS(descriptorsFrom, res.descriptors);
-    keypointsToROS(kptsFrom, res.kpts);
-    keypoints3DToROS(kptsFrom3D, res.kpts3D);
-    return true;
+    //descriptorsToROS(descriptorsFrom, res.descriptors); TODO Output result
+    //keypointsToROS(kptsFrom, res.kpts);
+    //keypoints3DToROS(kptsFrom3D, res.kpts3D);
 }
 
-bool StereoCamGeometricTools::estimateTransformation(loop_closure_transform::EstTransform::Request &req,
-                                                     loop_closure_transform::EstTransform::Response &res)
+void StereoCamGeometricTools::estimateTransformation(const loop_closure_transform::EstTransform::ConstPtr &msg)
 {
 
     Transform guess(0.0, 0.0, 0.0, 0, 0, 0);
@@ -132,13 +129,13 @@ bool StereoCamGeometricTools::estimateTransformation(loop_closure_transform::Est
     cv::Mat descriptorsFrom;
     cv::Mat descriptorsTo;
 
-    kptsFrom3D = keypoints3DFromROS(req.kptsFrom3D);
-    kptsTo3D = keypoints3DFromROS(req.kptsTo3D);
-    kptsFrom = keypointsFromROS(req.kptsFrom);
-    kptsTo = keypointsFromROS(req.kptsTo);
-    descriptorsFrom = descriptorsFromROS(req.descriptorsFrom);
-    descriptorsTo = descriptorsFromROS(req.descriptorsTo);
-    /*Transform result = registrationPipeline_->computeTransformationFromFeats( // TODO: Fix this
+    kptsFrom3D = keypoints3DFromROS(msg->kptsFrom3D);
+    kptsTo3D = keypoints3DFromROS(msg->kptsTo3D);
+    kptsFrom = keypointsFromROS(msg->kptsFrom);
+    kptsTo = keypointsFromROS(msg->kptsTo);
+    descriptorsFrom = descriptorsFromROS(msg->descriptorsFrom);
+    descriptorsTo = descriptorsFromROS(msg->descriptorsTo);
+    Transform result = registrationPipeline_->computeTransformationFromFeats(
         cam_,
         cam_,
         descriptorsFrom,
@@ -163,23 +160,13 @@ bool StereoCamGeometricTools::estimateTransformation(loop_closure_transform::Est
         result,
         &info_);
 
-    covToFloat64Msg(info_.covariance, res.poseWithCov.covariance);
-    transformToPoseMsg(result2, res.poseWithCov.pose);
-    if (result2.isNull())
-    {
-        res.success = false;
-    }
-    else
-    {
-        res.success = true;
-    }*/
-
-    return true;
+    //covToFloat64Msg(info_.covariance, res.poseWithCov.covariance); // Output result
+    //transformToPoseMsg(result2, res.poseWithCov.pose);
 }
-
+/*
 int main(int argc, char **argv)
 {
-    /*ros::init(argc, argv, "stereo_cam_geometric_tools_node");
+    ros::init(argc, argv, "stereo_cam_geometric_tools_node");
     ros::NodeHandle n;
 
     bool estimate_stereo_transform_from_tf;
@@ -209,7 +196,7 @@ int main(int argc, char **argv)
     ros::ServiceServer service_feats = n.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
     ros::ServiceServer service_transf = n.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
     ROS_INFO("Stereo camera geometric tools ready");
-    ros::spin();*/
+    ros::spin();
 
     return 0;
-}
+}*/
