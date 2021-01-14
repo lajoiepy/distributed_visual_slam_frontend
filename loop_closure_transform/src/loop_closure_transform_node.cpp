@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     //image_transport::ImageTransport it(nh);
     //image_transport::Subscriber sub_match = it.subscribe("verify_match_images", 1000, &LCDHandler::verify_match_images, &handler);
 
-    StereoCamGeometricTools stereo_tools;
+    //StereoCamGeometricTools stereo_tools;
     bool estimate_stereo_transform_from_tf = true;
     std::string frame_id = "base_line";
     int nb_min_inliers_loopclosures = 20;
@@ -56,14 +56,14 @@ int main(int argc, char** argv) {
         ROS_ERROR("Couldn't find loopclosures_min_inliers param");
     }*/
 
-    sensor_msgs::CameraInfoConstPtr camera_info_l_cst_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("left/camera_info", n);
-    sensor_msgs::CameraInfoConstPtr camera_info_r_cst_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("right/camera_info", n);
+    sensor_msgs::CameraInfoConstPtr camera_info_l_cst_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("left/camera_info", nh);
+    sensor_msgs::CameraInfoConstPtr camera_info_r_cst_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("right/camera_info", nh);
     sensor_msgs::CameraInfo camera_info_l = *camera_info_l_cst_ptr;
     sensor_msgs::CameraInfo camera_info_r = *camera_info_r_cst_ptr;
 
     StereoCamGeometricTools stereoCamGeometricToolsNode = StereoCamGeometricTools(camera_info_l, camera_info_r, frame_id, estimate_stereo_transform_from_tf, nb_min_inliers_loopclosures);
-    ros::ServiceServer service_feats = n.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
-    ros::ServiceServer service_transf = n.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
+    //ros::ServiceServer service_feats = nh.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
+    //ros::ServiceServer service_transf = nh.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
     ROS_INFO("Stereo camera geometric tools ready");
 
 
