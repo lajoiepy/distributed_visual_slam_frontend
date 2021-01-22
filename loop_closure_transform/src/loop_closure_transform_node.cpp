@@ -64,6 +64,9 @@ int main(int argc, char** argv) {
     StereoCamGeometricTools stereoCamGeometricToolsNode = StereoCamGeometricTools(camera_info_l, camera_info_r, frame_id, estimate_stereo_transform_from_tf, nb_min_inliers_loopclosures);
     //ros::ServiceServer service_feats = nh.advertiseService("get_features_and_descriptor", &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
     //ros::ServiceServer service_transf = nh.advertiseService("estimate_transformation", &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
+    ros::Subscriber sub_features_descriptors = nh.subscribe("features_and_descriptors", 10, &StereoCamGeometricTools::getFeaturesAndDescriptor, &stereoCamGeometricToolsNode);
+    ros::Subscriber sub_transform = nh.subscribe("estimate_transform", 10, &StereoCamGeometricTools::estimateTransformation, &stereoCamGeometricToolsNode);
+    
     ROS_INFO("Stereo camera geometric tools ready");
 
 
