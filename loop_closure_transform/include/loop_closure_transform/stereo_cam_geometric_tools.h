@@ -24,7 +24,7 @@ public:
     StereoCamGeometricTools(const sensor_msgs::CameraInfo &camera_info_l, const sensor_msgs::CameraInfo &camera_info_r, const std::string &frame_id, const bool &estimate_stereo_transform_from_tf, const int &nb_min_inliers_loopclosures);
 
 
-    void ComputeFeaturesAndDescriptors(const loop_closure_transform::StereoImagePair::ConstPtr &msg);
+    void ComputeFeaturesAndDescriptors(const sensor_msgs::Image::ConstPtr& image_left, const sensor_msgs::Image::ConstPtr& image_right);
     loop_closure_transform::StereoExtractResult SendFeaturesAndDescriptors();
     bool IsExtractionQueueEmpty(){ return extraction_result_queue_.empty(); };
 

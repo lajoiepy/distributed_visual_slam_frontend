@@ -7,33 +7,6 @@ StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &
     ULogger::setType(ULogger::kTypeConsole);
     ULogger::setLevel(ULogger::kInfo);
 
-    // cv::Size image_size_l(camera_info_l.width, camera_info_l.height);
-
-    // cv::Mat D_l = cv::Mat::zeros(1, 5, CV_64F);
-    // if (camera_info_l.D.size())
-    // {
-    //     cv::Mat D_l(1, camera_info_l.D.size(), CV_64F, &camera_info_l.D[0]);
-    // }
-    // cv::Mat K_l(3, 3, CV_64F, &camera_info_l.K[0]);
-    // cv::Mat R_l(3, 3, CV_64F, &camera_info_l.R[0]);
-    // cv::Mat P_l(3, 4, CV_64F, &camera_info_l.P[0]);
-    // cv::Size image_size_r(camera_info_r.width, camera_info_r.height);
-
-    // cv::Mat D_r = cv::Mat::zeros(1, 5, CV_64F);
-    // if (camera_info_r.D.size())
-    // {
-    //     cv::Mat D_r(1, camera_info_r.D.size(), CV_64F, &camera_info_r.D[0]);
-    // }
-    // cv::Mat K_r(3, 3, CV_64F, &camera_info_r.K[0]);
-    // cv::Mat R_r(3, 3, CV_64F, &camera_info_r.R[0]);
-    // cv::Mat P_r(3, 4, CV_64F, &camera_info_r.P[0]);
-
-    // cam_ = StereoCameraModel("stereo_calib",
-    //                         image_size_l, K_l, D_l, R_l, P_l,
-    //                         image_size_r, K_r, D_r, R_r, P_r,
-    //                         cv::Mat(), cv::Mat(), cv::Mat(), cv::Mat());
-
-    // Get the TF transforms necessary to create the stereo camera model
     tf::TransformListener listener;
     tf::StampedTransform local_transform_tf;
 
@@ -97,11 +70,11 @@ StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &
     registration_pipeline_ = std::unique_ptr<Registration>(Registration::create(params));
 }
 
-void StereoCamGeometricTools::ComputeFeaturesAndDescriptors(const loop_closure_transform::StereoImagePair::ConstPtr &msg)
+void StereoCamGeometricTools::ComputeFeaturesAndDescriptors(const sensor_msgs::Image::ConstPtr& image_left, const sensor_msgs::Image::ConstPtr& image_right)
 {
-
-    cv::Mat img_l = cv_bridge::toCvCopy(msg->image_left, sensor_msgs::image_encodings::MONO8)->image;
-    cv::Mat img_r = cv_bridge::toCvCopy(msg->image_right, sensor_msgs::image_encodings::MONO8)->image;
+    // TODO:: Add Queue
+    cv::Mat img_l = cv_bridge::toCvCopy(image_left, sensor_msgs::image_encodings::MONO8)->image;
+    cv::Mat img_r = cv_bridge::toCvCopy(image_right, sensor_msgs::image_encodings::MONO8)->image;
 
     SensorData frame(img_l, img_r, cam_);
 
@@ -135,7 +108,7 @@ loop_closure_transform::EstimatedTransform StereoCamGeometricTools::SendEstimate
 
 void StereoCamGeometricTools::EstimateTransformation(const loop_closure_transform::EstTransform::ConstPtr &msg)
 {
-
+    // TODO: Add queue
     Transform guess(0.0, 0.0, 0.0, 0, 0, 0);
 
     std::vector<cv::KeyPoint> kptsFrom;

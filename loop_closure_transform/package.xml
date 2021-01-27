@@ -64,6 +64,7 @@
   <depend>image_transport</depend>
   <depend>sensor_msgs</depend>
   <depend>roslaunch</depend>
+  <depend>message_filters</depend>
 
   <build_depend>message_generation</build_depend>
   <build_export_depend>message_runtime</build_export_depend>

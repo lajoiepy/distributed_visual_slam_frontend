@@ -20,7 +20,7 @@
     <arg name="recorded_id" default="0" />
 
     <!-- Play the bag within the namespace -->
-    <arg name="node_start_delay" default="45.0" />
+    <arg name="node_start_delay" default="10.0" />
     <node pkg="rosbag" type="play" name="playback_$(arg local_robot_id)" args="-r 0.2 -d $(arg node_start_delay) $(arg bag)">
         <remap from="/robot_$(arg recorded_id)/camera/color/image_raw" to="$(arg topic_rgb_image_rect)"/>
         <remap from="/robot_$(arg recorded_id)/camera/infra1/image_rect_raw" to="$(arg topic_left_image_rect)"/>
@@ -30,5 +30,12 @@
         <remap from="/robot_$(arg recorded_id)/dji_sdk/global_position" to="/robot_$(arg local_robot_id)/dji_sdk/global_position"/>        
     </node>
     
-    <node pkg="loop_closure_transform" type="loop_closure_transform_node" name="loop_closure_transform" output="screen"/>
+    <param name="frame_id" type="string" value="/robot_$(arg recorded_id)/camera_link"/>
+    <node pkg="loop_closure_transform" type="loop_closure_transform_node" name="loop_closure_transform" output="screen">
+        <remap from="rgb/image_rect" to="$(arg topic_rgb_image_rect)"/>
+        <remap from="left/image_rect" to="$(arg topic_left_image_rect)"/>
+        <remap from="right/image_rect" to="$(arg topic_right_image_rect)"/>
+        <remap from="left/camera_info" to="$(arg topic_left_camera_info)"/>
+        <remap from="right/camera_info" to="$(arg topic_right_camera_info)"/>
+    </node>
 </launch>
