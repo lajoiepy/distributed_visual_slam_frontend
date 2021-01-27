@@ -1,0 +1,3 @@
+int64 key1
+int64 key2
+geometry_msgs/PoseWithCovariance pose

@@ -1,4 +1,4 @@
-#include "loop_closure_transform/stereoCamGeometricTools.h"
+#include "loop_closure_transform/stereo_cam_geometric_tools.h"
 
 using namespace rtabmap;
 
@@ -94,10 +94,10 @@ StereoCamGeometricTools::StereoCamGeometricTools(const sensor_msgs::CameraInfo &
 
     //params.insert(rtabmap::ParametersPair(rtabmap::Parameters::kRegStrategy(), "0"));
 
-    registrationPipeline_ = Registration::create(params);
+    registration_pipeline_ = std::unique_ptr<Registration>(Registration::create(params));
 }
 
-void StereoCamGeometricTools::getFeaturesAndDescriptor(const loop_closure_transform::StereoImagePair::ConstPtr &msg)
+void StereoCamGeometricTools::ComputeFeaturesAndDescriptors(const loop_closure_transform::StereoImagePair::ConstPtr &msg)
 {
 
     cv::Mat img_l = cv_bridge::toCvCopy(msg->image_left, sensor_msgs::image_encodings::MONO8)->image;
@@ -110,14 +110,30 @@ void StereoCamGeometricTools::getFeaturesAndDescriptor(const loop_closure_transf
     cv::Mat descriptorsFrom;
     RegistrationInfo info1;
     Signature frameSig(frame);
-    registrationPipeline_->getFeatures(kptsFrom3D, kptsFrom, descriptorsFrom, frameSig, &info1);
+    registration_pipeline_->getFeatures(kptsFrom3D, kptsFrom, descriptorsFrom, frameSig, &info1);
 
-    //descriptorsToROS(descriptorsFrom, res.descriptors); TODO Output result
-    //keypointsToROS(kptsFrom, res.kpts);
-    //keypoints3DToROS(kptsFrom3D, res.kpts3D);
+    loop_closure_transform::StereoExtractResult new_result;
+    descriptorsToROS(descriptorsFrom, new_result.descriptors);
+    keypointsToROS(kptsFrom, new_result.kpts);
+    keypoints3DToROS(kptsFrom3D, new_result.kpts3D);
+    extraction_result_queue_.push(new_result);
 }
 
-void StereoCamGeometricTools::estimateTransformation(const loop_closure_transform::EstTransform::ConstPtr &msg)
+loop_closure_transform::StereoExtractResult StereoCamGeometricTools::SendFeaturesAndDescriptors()
+{   
+    auto result = extraction_result_queue_.front();
+    extraction_result_queue_.pop();
+    return result;
+}
+
+loop_closure_transform::EstimatedTransform StereoCamGeometricTools::SendEstimatedTransform()
+{
+    auto result = transform_result_queue_.front();
+    transform_result_queue_.pop();
+    return result;
+}
+
+void StereoCamGeometricTools::EstimateTransformation(const loop_closure_transform::EstTransform::ConstPtr &msg)
 {
 
     Transform guess(0.0, 0.0, 0.0, 0, 0, 0);
@@ -135,7 +151,7 @@ void StereoCamGeometricTools::estimateTransformation(const loop_closure_transfor
     kptsTo = keypointsFromROS(msg->kptsTo);
     descriptorsFrom = descriptorsFromROS(msg->descriptorsFrom);
     descriptorsTo = descriptorsFromROS(msg->descriptorsTo);
-    Transform result = registrationPipeline_->computeTransformationFromFeats(
+    Transform result = registration_pipeline_->computeTransformationFromFeats(
         cam_,
         cam_,
         descriptorsFrom,
@@ -147,7 +163,7 @@ void StereoCamGeometricTools::estimateTransformation(const loop_closure_transfor
         kptsTo,
         guess,
         &info_);
-    Transform result2 = registrationPipeline_->computeTransformationFromFeats(
+    Transform result2 = registration_pipeline_->computeTransformationFromFeats(
         cam_,
         cam_,
         descriptorsFrom,
@@ -160,9 +176,15 @@ void StereoCamGeometricTools::estimateTransformation(const loop_closure_transfor
         result,
         &info_);
 
-    //covToFloat64Msg(info_.covariance, res.poseWithCov.covariance); // Output result
-    //transformToPoseMsg(result2, res.poseWithCov.pose);
+    loop_closure_transform::EstimatedTransform transform;
+    transform.key1 = 0; // TODO
+    transform.key2 = 0; // TODO
+    covToFloat64Msg(info_.covariance, transform.pose.covariance);
+    transformToPoseMsg(result2, transform.pose.pose);
+    transform_result_queue_.push(transform);
 }
+
+
 /*
 int main(int argc, char **argv)
 {

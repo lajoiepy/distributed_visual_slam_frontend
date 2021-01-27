@@ -1,0 +1,34 @@
+<launch>
+    <arg name="local_robot_id" default="0" />
+    <arg name="other_robot_id" default="0" />
+
+    <arg name="netvlad_distance" default="0.13" />
+    <arg name="netvlad_dimensions" default="128" />
+    <arg name="netvlad_batch_size" default="3" />
+    <arg name="netvlad_max_matches_nb" default="20" />
+    <arg name="separators_min_inliers" default="5" />
+    <arg name="number_of_kf_skipped" default="0" />
+
+
+    <arg name="topic_left_image_rect" value="/robot_$(arg local_robot_id)/camera/infra1/image_rect_raw"/>
+    <arg name="topic_right_image_rect" value="/robot_$(arg local_robot_id)/camera/infra2/image_rect_raw"/>
+    <arg name="topic_left_camera_info" value="/robot_$(arg local_robot_id)/camera/infra1/camera_info"/>
+    <arg name="topic_right_camera_info" value="/robot_$(arg local_robot_id)/camera/infra2/camera_info"/>
+    <arg name="topic_rgb_image_rect" value="/robot_$(arg local_robot_id)/camera/color/image_raw" />
+
+    <arg name="bag" default="/datasets/parkinglot1.bag" />
+    <arg name="recorded_id" default="0" />
+
+    <!-- Play the bag within the namespace -->
+    <arg name="node_start_delay" default="45.0" />
+    <node pkg="rosbag" type="play" name="playback_$(arg local_robot_id)" args="-r 0.2 -d $(arg node_start_delay) $(arg bag)">
+        <remap from="/robot_$(arg recorded_id)/camera/color/image_raw" to="$(arg topic_rgb_image_rect)"/>
+        <remap from="/robot_$(arg recorded_id)/camera/infra1/image_rect_raw" to="$(arg topic_left_image_rect)"/>
+        <remap from="/robot_$(arg recorded_id)/camera/infra2/image_rect_raw" to="$(arg topic_right_image_rect)"/>
+        <remap from="/robot_$(arg recorded_id)/camera/infra1/camera_info" to="$(arg topic_left_camera_info)"/>
+        <remap from="/robot_$(arg recorded_id)/camera/infra2/camera_info" to="$(arg topic_right_camera_info)"/>
+        <remap from="/robot_$(arg recorded_id)/dji_sdk/global_position" to="/robot_$(arg local_robot_id)/dji_sdk/global_position"/>        
+    </node>
+    
+    <node pkg="loop_closure_transform" type="loop_closure_transform_node" name="loop_closure_transform" output="screen"/>
+</launch>

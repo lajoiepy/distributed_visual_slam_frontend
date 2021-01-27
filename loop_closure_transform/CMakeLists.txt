@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(loop_closure_transform)
+set (CMAKE_CXX_STANDARD 14)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -52,6 +53,7 @@ add_message_files(
   EstTransform.msg
   StereoExtractResult.msg
   StereoImagePair.msg
+  EstimatedTransform.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -95,13 +97,13 @@ add_library(loop_closure_transform
 target_link_libraries(loop_closure_transform ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam)
 add_dependencies(loop_closure_transform loop_closure_transform_gencpp)
 
-# add_executable(stereo_cam_geometric_tools src/stereoCamGeometricTools.cpp src/Registration.cpp src/RegistrationVis.cpp src/MsgConversion.cpp)
+# add_executable(stereo_cam_geometric_tools src/stereo_cam_geometric_tools.cpp src/Registration.cpp src/RegistrationVis.cpp src/MsgConversion.cpp)
 # target_link_libraries(stereo_cam_geometric_tools ${catkin_LIBRARIES} ${RTABMap_LIBRARIES} ${OpenCV_LIBRARIES} ${QT_LIBRARIES} ${PCL_LIBRARIES} gtsam loop_closure_transform)
 # add_dependencies(stereo_cam_geometric_tools ${catkin_EXPORTED_TARGETS} loop_closure_transform_gencpp)
 
 add_executable(${PROJECT_NAME}_node 
   src/loop_closure_transform_node.cpp
-  src/stereoCamGeometricTools.cpp
+  src/stereo_cam_geometric_tools.cpp
   )
 target_link_libraries(${PROJECT_NAME}_node 
   ${catkin_LIBRARIES}
